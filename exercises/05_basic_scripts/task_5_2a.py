@@ -49,3 +49,22 @@ bin_ip = "00001010000000010000000111000011"
 Ограничение: Все задания надо выполнять используя только пройденные темы.
 
 """
+ip_template = '''
+Network:
+{0:<8}  {1:<8}  {2:<8}  {3:<8}
+{0:08b}  {1:08b}  {2:08b}  {3:08b}
+
+Mask:
+/{4}
+{5:<8}  {6:<8}  {7:<8}  {8:<8}
+{5:08b}  {6:08b}  {7:08b}  {8:08b}
+'''
+ip_ad = input('Введите адрес вформате x.x.x.x/xx: ')
+ips  = ip_ad.split('/')[0].split('.')
+ipf = '{0:08b}{1:08b}{2:08b}{3:08b}'.format(int(ips[0]),int(ips[1]),int(ips[2]),int(ips[3]))
+msk = int(ip_ad.split('/')[1])
+ipk = ipf[:msk] + "0" * (32-msk)
+m = "1" * msk + "0" * (32-msk)
+sk = [int(m[:8], 2),int(m[8:16], 2),int(m[16:24], 2),int(m[24:], 2)]
+ip = [int(ipk[:8], 2),int(ipk[8:16], 2),int(ipk[16:24], 2),int(ipk[24:], 2)]
+print(ip_template.format(int(ip[0]),int(ip[1]),int(ip[2]),int(ip[3]), msk, sk[0], sk[1], sk[2], sk[3]))
