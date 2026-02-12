@@ -16,4 +16,15 @@
 
 """
 
-ignore = ["duplex", "alias", "configuration"]
+ignore = {"duplex", "alias", "configuration"}
+from sys import argv
+
+src_file = argv[1]
+dst_file = argv[2]
+with open(src_file, 'r') as src:
+    with open(dst_file, 'w') as dest:
+        for line in src:
+            if line.startswith('!') or set(ignore).intersection(set(line.split())):
+                pass
+            else:
+                dest.write(line)
