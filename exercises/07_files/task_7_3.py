@@ -20,3 +20,10 @@
 Ограничение: Все задания надо выполнять используя только пройденные темы.
 
 """
+mac_template = '''
+{0:<8} {1:<8} {2:>11}
+'''
+with open('CAM_table.txt', 'r') as f:
+    for line in f:
+        if len(line) != 1 and line.split()[0].isdigit():
+            print(mac_template.format(line.split()[0],line.split()[1],line.split()[3]))

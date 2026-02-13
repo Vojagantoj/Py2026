@@ -40,3 +40,17 @@
 Ограничение: Все задания надо выполнять используя только пройденные темы.
 
 """
+mac_template = '''
+{0:<8} {1:<8} {2:>11}
+'''
+mac = []
+with open('CAM_table.txt', 'r') as f:
+    for line in f:
+        if len(line) != 1 and line.split()[0].isdigit():
+            l = line.split()[1:]
+            l.insert(0,int(line.split()[0]))
+            l.remove('DYNAMIC')
+            mac.append(l)
+    mac.sort()
+    for i in mac:
+        print(mac_template.format(i[0],i[1],i[2]))
