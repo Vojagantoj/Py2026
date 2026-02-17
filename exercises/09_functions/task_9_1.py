@@ -65,6 +65,7 @@ access_config_2 = {
 }
 
 
+
 def generate_access_config(intf_vlan_mapping, access_template):
     """
     intf_vlan_mapping - словарь с соответствием интерфейс-VLAN такого вида:
@@ -75,3 +76,12 @@ def generate_access_config(intf_vlan_mapping, access_template):
 
     Возвращает список всех портов в режиме access с конфигурацией на основе шаблона
     """
+    result = []
+    for i in intf_vlan_mapping:
+        result.append('interface ' + i.rstrip())
+        for j in access_template:
+            if j.endswith('vlan'):
+                result.append(j + ' ' + str(intf_vlan_mapping[i]).rstrip())
+            else:
+                result.append(j.rstrip())
+    return result

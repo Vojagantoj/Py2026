@@ -43,3 +43,31 @@ port_security_template = [
 ]
 
 access_config = {"FastEthernet0/12": 10, "FastEthernet0/14": 11, "FastEthernet0/16": 17}
+def generate_access_config(intf_vlan_mapping, access_template,psecurity=None):
+    """
+    intf_vlan_mapping - словарь с соответствием интерфейс-VLAN такого вида:
+        {'FastEthernet0/12':10,
+         'FastEthernet0/14':11,
+         'FastEthernet0/16':17}
+    access_template - список команд для порта в режиме access
+
+    Возвращает список всех портов в режиме access с конфигурацией на основе шаблона
+    """
+    result = []
+    for i in intf_vlan_mapping:
+        result.append('interface ' + i.rstrip())
+        if psecurity:
+            for j in access_template:
+                if j.endswith('vlan'):
+                    result.append(j + ' ' + str(intf_vlan_mapping[i]).rstrip())
+                else:
+                    result.append(j.rstrip())
+            for com in port_security_template:
+                result.append(com)
+        else:
+            for j in access_template:
+                if j.endswith('vlan'):
+                    result.append(j + ' ' + str(intf_vlan_mapping[i]).rstrip())
+                else:
+                    result.append(j.rstrip())
+    return result

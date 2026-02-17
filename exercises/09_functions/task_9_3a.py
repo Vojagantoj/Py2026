@@ -25,3 +25,27 @@
 
 Ограничение: Все задания надо выполнять используя только пройденные темы.
 """
+def get_int_vlan_map(config_filename):
+    '''
+    Описание выше
+    '''
+    with open(config_filename, 'r') as f:
+        result = []
+        access = {}
+        trunk = {}
+        for line in f:
+            if line.startswith('interface') and 'Ethernet' in line:
+                interface = line.split()[1]
+            elif 'access vlan' in line:
+                access[interface] = int(line.split()[-1])
+            elif 'access' in line:
+                access[interface] = 1
+            elif 'allowed vlan' in line:
+                vlans = line.split()[-1]
+                vlans_list = []
+                for i in vlans.split(','):
+                    vlans_list.append(int(i))
+                trunk[interface] = vlans_list
+        result = [access,trunk]
+    return tuple(result)
+

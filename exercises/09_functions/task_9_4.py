@@ -64,3 +64,21 @@ def ignore_command(command, ignore):
         if word in command:
             ignore_status = True
     return ignore_status
+def convert_config_to_dict(config_filename):
+    '''
+    Описание выше
+    '''
+    with open(config_filename, 'r') as f:
+        result = {}
+        access = []
+        for line in f:
+            if line == '\n' or '!' in line or ignore_command(line,ignore):
+                continue
+            elif not line.startswith(' '):
+                b = line.strip()
+                access = []
+                result[b] = access
+            else:
+                access.append(line.strip())
+                result[b] = access
+    return result
