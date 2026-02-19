@@ -34,3 +34,22 @@
  '172.21.41.129', '172.21.41.130', '172.21.41.131', '172.21.41.132']
 
 """
+import ipaddress
+
+def convert_ranges_to_ip_list(list_address):
+    '''
+    Описание выше
+    '''
+    result = []
+    for addr in list_address:
+        if '-' in addr:
+            ipv4 = ipaddress.ip_address(addr.split('-')[0])
+            result.append(str(ipv4))
+            ran = int(addr.split('-')[1].split('.')[-1]) - int(addr.split('-')[0].split('.')[-1])
+            for i in range(1,ran+1):
+                result.append(str(ipv4+i))
+        else:
+            result.append(addr)
+    return result
+if __name__ == '__main__':
+    print(convert_ranges_to_ip_list(list_ranges))
