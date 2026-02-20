@@ -24,3 +24,19 @@
 а не ввод пользователя.
 
 """
+import re
+
+def get_ip_from_cfg(name_file):
+    '''
+    Описание выше
+    '''
+    result = []
+    with open(name_file, 'r') as f:
+        for line in f:
+            match = re.search('ip address (?P<ip>\S+) (?P<mask>\S+)', line)
+            if match:
+                result.append(match.group(1, 2))
+    return result
+
+if __name__ == '__main__':
+    print(get_ip_from_cfg('config_r1.txt'))
