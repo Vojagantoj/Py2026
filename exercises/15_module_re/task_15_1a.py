@@ -30,13 +30,23 @@ def get_ip_from_cfg(name_file):
     '''
     Описание выше
     '''
-    result = []
+    regex = (r'interface (?P<interf>\S+)'
+            r'|ip address (?P<ip>\S+) (?P<mask>\S+)'
+            )
+    result = {}
+    result1 = {}
     with open(name_file, 'r') as f:
-        for line in f:
-            match = re.search('ip address (?P<ip>\S+) (?P<mask>\S+)', line)
-            if match:
-                result.append(match.group(1, 2))
-    return result
+        match_iter = re.finditer(regex, f.read())
+        for match in match_iter:
+            if match.lastgroup == 'interf':
+                interf = match.group(match.lastgroup)
+                result[interf] = {}
+            elif interf:
+                result[interf] = match.group('ip','mask')
+        for i in result:
+            if len(result[i]) == 2:
+                result1[i] = result[i]
+    return result1
 
 if __name__ == '__main__':
     print(get_ip_from_cfg('config_r1.txt'))
