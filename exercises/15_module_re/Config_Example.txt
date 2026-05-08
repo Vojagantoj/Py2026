@@ -1,0 +1,54 @@
+interface GigabitEthernet0/0
+ description NAME_OF_SERVICES_0
+ mtu 4444
+ no ip address
+ negotiation auto
+ service instance 123 ethernet
+  description NAME_OF_SERVICES_123 EVC-JOBID:55555
+  encapsulation dot1q 123
+  xconnect 10.10.10.8 123456 encapsulation mpls pw-class PW-MPLS-CWORD
+   backup peer 10.10.10.9 123456 pw-class PW-MPLS-CWORD
+   mtu 1700
+!
+interface GigabitEthernet0/3
+ description NAME_OF_SERVICES_3
+ no ip address
+ negotiation auto
+ qos-config scheduling-mode min-bw-guarantee
+ synchronous mode
+ service-policy output PMAP-UNI-BS-OUT
+ service instance 1050 ethernet 1VFRNAME_OF_SERVICES
+  encapsulation dot1q 3081
+  rewrite ingress tag pop 1 symmetric
+  service-policy input POLICE_NAME
+  bridge-domain 1050
+ !
+ service instance 1060 ethernet 2VFRNAME_OF_SERVICES
+  encapsulation dot1q 1060
+  rewrite ingress tag pop 1 symmetric
+  service-policy input POLICE_NAME
+  bridge-domain 1060
+ !
+!
+interface Vlan1050
+ description _NAME_OF_SERVICES_1050
+ vrf forwarding 1VFRNAME_OF_SERVICES
+ ip address 10.74.74.1 255.255.255.252
+ ip helper-address 10.8.8.249
+!
+interface Vlan1051
+ description _NAME_OF_SERVICES_1051
+ vrf forwarding 1VFRNAME_OF_SERVICES
+ ip address 10.13.13.13 255.255.255.252
+!
+interface Vlan1060
+ description _NAME_OF_SERVICES_1060
+ vrf forwarding 2VFRNAME_OF_SERVICES
+ ip address 10.8.8.7 255.255.255.252
+ ip helper-address 10.8.8.249
+!
+interface Vlan1100
+ description _NAME_OF_SERVICES_1100
+ vrf forwarding 3VFRNAME_OF_SERVICES
+ ip address 10.201.9.25 255.255.255.252
+!

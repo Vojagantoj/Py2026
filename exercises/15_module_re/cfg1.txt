@@ -1,0 +1,46 @@
+
+multilink bundle-name authenticated
+mpls label range 1000 1999
+mpls label protocol ldp
+mpls ldp explicit-null
+mpls ldp discovery targeted-hello accept
+mpls traffic-eng tunnels
+xconnect logging redundancy
+!
+
+!
+!
+interface Loopback0
+ ip address 10.2.2.2 255.255.255.255
+!
+!
+interface Ethernet0/0
+ description To PE_r3 Ethernet0/0
+ bandwidth 100000
+ ip address 10.0.23.2 255.255.255.0
+ mpls traffic-eng tunnels
+ ip rsvp bandwidth 100000 10000
+!
+interface Ethernet0/1
+ ip address 10.255.2.2 255.255.255.0
+ ip address 10.254.2.2 255.255.255.0 secondary
+!
+interface Ethernet0/2
+ description To P_r9 Ethernet0/2
+ ip address 10.0.29.2 255.255.255.0
+ mpls traffic-eng tunnels
+ ip rsvp bandwidth
+!
+interface Ethernet0/3
+ description To sw1 Ethernet0/3
+ no ip address
+!
+interface Ethernet0/3.100
+ encapsulation dot1Q 100
+ xconnect 10.1.1.1 12100 encapsulation mpls
+  backup peer 10.4.4.4 14100
+  backup delay 1 1
+!
+interface Ethernet1/0
+ no ip address
+ shutdown

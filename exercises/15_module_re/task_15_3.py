@@ -32,3 +32,19 @@ object network LOCAL_10.1.9.5
 
 Во всех правилах для ASA интерфейсы будут одинаковыми (inside,outside).
 """
+import re
+def convert_ios_nat_to_asa(filname_from,filename_to):
+    '''
+    Описание выше
+    '''
+    regex = r'.+ static tcp (?P<ip>\S+) (?P<port>\S+) interface (?P<inerface_name>\S+) (?P<num>\S+)'
+    with open(filname_from) as src, open(filename_to, 'w') as dest:
+        for m in re.finditer(regex, src.read()):
+            ip = m.group('ip')
+            port = m.group('port')
+            inerface_name = m.group('inerface_name')
+            num = m.group('num')
+            dest.write(f'object network LOCAL_{ip}\n host {ip}\n nat (inside,outside) static interface service tcp {port} {num}\n')
+
+if __name__ == '__main__':
+    print(convert_ios_nat_to_asa('cisco_nat_config.txt', '12345.txt'))

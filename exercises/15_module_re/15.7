@@ -1,0 +1,66 @@
+import re
+from pprint import pprint
+
+#
+#def parse_cdp('Config_Example.txt'):
+regex = (r'interface (?P<interface_name>\S+)'
+         r'|\sdescription (?P<desc>\S+)'
+         r'|service-policy output (?P<SPO>\S+)'
+         r'|service-policy input (?P<SPI>\S+)'
+         r'|service instance (?P<SI>\d+).+'
+         r'|encapsulation dot1q (?P<VLAN>\d+)'
+         r'|xconnect (?P<IP_NEI>\S+) (?P<PW_ID>\d+) .+pw-class (?P<PW_CL>\S+)'
+         r'|\s{3}mtu (?P<MTU>\d+)'
+         r'|backup peer (?P<BACK_IP_NEI>\S+) .+'
+         r'|(?P<REWR>\S+) ingress tag pop.+'
+         r'|\svrf forwarding (?P<VRF>\S+)'
+         r'|ip helper-address (?P<HELPER>\S+)'
+         r'|\sip address (?P<IPADDR>\S+) (?P<MASK>\S+)'
+         r'|bridge-domain (?P<BD>\d+)'
+        )
+result = {}
+inside_si = False
+with open('Config_Example.txt') as f:
+    for line in f:
+        match = re.search(regex, line)
+        if match:
+            if match.lastgroup == 'interface_name':
+                interface_name = match.group(match.lastgroup)
+                result[interface_name] = {}
+                inside_si = False
+            elif match.lastgroup == 'SI':
+                SI = match.group(match.lastgroup)
+                inside_si = True
+                result[interface_name][SI] = {}
+            elif match.lastgroup == 'desc':
+                if inside_si:
+                    result[interface_name][SI]['desc_SI'] = match.group('desc')
+                else:
+                    result[interface_name]['desc'] = match.group('desc')
+            elif match.lastgroup == 'SPO' or match.lastgroup == 'SPI':
+                    if inside_si:
+                        result[interface_name][SI][match.lastgroup] = match.group(match.lastgroup)
+                    else:
+                        result[interface_name][match.lastgroup] = match.group(match.lastgroup)
+            elif match.lastgroup == 'PW_CL':
+                result[interface_name][SI]['PW_ID'] = match.group('PW_ID')
+                result[interface_name][SI]['IP_NEI'] = match.group('IP_NEI')
+                result[interface_name][SI]['PW_CL'] = match.group('PW_CL')
+            elif 'Vlan' in interface_name or 'BDI' in interface_name:
+                if match.lastgroup == 'MASK':
+                    result[interface_name]['IPADDR'] = match.group('IPADDR')
+                    result[interface_name]['MASK'] = match.group('MASK')
+                else:
+                    result[interface_name][match.lastgroup] = match.group(match.lastgroup)
+            else:
+                result[interface_name][SI][match.lastgroup] = match.group(match.lastgroup)
+for phys_iface, phys_data in result.items():
+    if phys_iface.startswith('GigabitEthernet'):
+        for si_id, si_data in phys_data.items():
+            if isinstance(si_data, dict) and 'BD' in si_data:
+                bd = si_data['BD']
+                vlan_iface = f'Vlan{bd}'
+                if vlan_iface in result:
+                    si_data['L3'] = result[vlan_iface]
+pprint(result)
+#pprint(parse_cdp('sh_cdp_neighbors_sw1.txt'))

@@ -20,9 +20,24 @@ SW1              Eth 0/0           140          S I      WS-C3750-  Eth 0/1
 description Connected to SW1 port Eth 0/1
 
 Функция должна возвращать словарь, в котором ключи - имена интерфейсов,
-а значения - команда задающая описание интерфейса:
+а значения - команда задresultающая описание интерфейса:
 'Eth 0/0': 'description Connected to SW1 port Eth 0/1'
 
 
 Проверить работу функции на файле sh_cdp_n_sw1.txt.
 """
+import re
+def generate_description_from_cdp(file_cdp):
+    '''
+    Описание выше
+    '''
+    result = {}
+    regex = r'(?P<device>\S+)\s{2,}(?P<local_port>\S+\s\S+)\s{2,}\d+ .+\s{2,}(?P<remote_port>\S+\s\S+)'
+    with open(file_cdp) as f:
+        match = re.findall(regex, f.read())
+        for device, local_port, remote_port in match:
+            result[local_port] = f'description Connected to {device} port {remote_port}'
+    return result
+
+if __name__ == '__main__':
+    print(generate_description_from_cdp('sh_cdp_n_sw1.txt'))

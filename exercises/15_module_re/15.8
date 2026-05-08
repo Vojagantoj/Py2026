@@ -1,0 +1,12 @@
+result = {'GigabitEthernet0/0': {'desc': 'NAME_OF_SERVICES_0', '123': {'desc_SI': 'NAME_OF_SERVICES_123', 'VLAN': '123', 'PW_ID': '123456', 'IP_NEI': '10.10.10.8', 'PW_CL': 'PW-MPLS-CWORD', 'BACK_IP_NEI': '10.10.10.9', 'MTU': '1700'}}, 'GigabitEthernet0/3': {'desc': 'NAME_OF_SERVICES_3', 'SPO': 'PMAP-UNI-BS-OUT', '1050': {'VLAN': '3081', 'REWR': 'rewrite', 'SPI': 'POLICE_NAME', 'BD': '1050'}, '1060': {'VLAN': '1060', 'REWR': 'rewrite', 'SPI': 'POLICE_NAME', 'BD': '1060'}}, 'Vlan1050': {'desc': '_NAME_OF_SERVICES_1050', 'VRF': '1VFRNAME_OF_SERVICES', 'IPADDR': '10.74.74.1', 'MASK': '255.255.255.252', 'HELPER': '10.8.8.249'}, 'Vlan1051': {'desc': '_NAME_OF_SERVICES_1051', 'VRF': '1VFRNAME_OF_SERVICES', 'IPADDR': '10.13.13.13', 'MASK': '255.255.255.252'}, 'Vlan1060': {'desc': '_NAME_OF_SERVICES_1060', 'VRF': '2VFRNAME_OF_SERVICES', 'IPADDR': '10.8.8.7', 'MASK': '255.255.255.252', 'HELPER': '10.8.8.249'}, 'Vlan1100': {'desc': '_NAME_OF_SERVICES_1100', 'VRF': '3VFRNAME_OF_SERVICES', 'IPADDR': '10.201.9.25', 'MASK': '255.255.255.252'}}
+
+
+for phys_iface, phys_data in result.items():
+    if phys_iface.startswith('GigabitEthernet'):
+        for si_id, si_data in phys_data.items():
+            if isinstance(si_data, dict) and 'BD' in si_data:
+                bd = si_data['BD']
+                vlan_iface = f'Vlan{bd}'
+                if vlan_iface in result:
+                    si_data['L3'] = result[vlan_iface]
+pprint(result)
